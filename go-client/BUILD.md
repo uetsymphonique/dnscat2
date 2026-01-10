@@ -2,8 +2,6 @@
 
 ## Hardcoded Configuration
 
-Build với các tham số mặc định được inject tại compile time (không cần args khi chạy):
-
 ```bash
 go build -ldflags="-s -w \
   -X main.DefaultServer=192.168.1.2 \
